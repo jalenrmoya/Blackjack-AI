@@ -9,6 +9,13 @@ class Game:
     # winner: the winner of the game (winner = turn of winner)
     # moves = number of moves made in the game
     def __init__(self, players = 2, decks = 1):
+        # check if the number of players and decks are valid
+        if (players < 2 or players > 7):
+            raise ValueError("Invalid number of players.")
+        if (decks < 1 or decks > 4):
+            print("Invalid number of decks.")
+            raise ValueError("Invalid number of decks.")
+        
         # initalize the board
         self.values = {'2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'J': 10, 'Q': 10, 'K': 10, 'A': 11}
         self.board = []
@@ -100,6 +107,10 @@ class Game:
     # Is given a list of Players from the Player class and uses their moves to play the game
     # player = [Dealer, Player 1, Player 2, ...]
     def play_game(self, players):
+        # Check if the number of players is valid
+        if len(players) != len(self.players):
+            raise ValueError("Invalid number of players.")
+        
         self.dealCards()
         print("Initial Board: ", self.getBoard())
 
