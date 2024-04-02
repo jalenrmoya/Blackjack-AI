@@ -10,12 +10,11 @@ class Game:
     # moves = number of moves made in the game
     def __init__(self, players = 2, decks = 1):
         # check if the number of players and decks are valid
-        if (players < 2 or players > 7):
-            raise ValueError("Invalid number of players.")
-        if (decks < 1 or decks > 4):
-            print("Invalid number of decks.")
-            raise ValueError("Invalid number of decks.")
-        
+        VALIDPLAYERS = range(2, 8)
+        VALIDDECKS = range(1, 5)
+        if players not in VALIDPLAYERS or decks not in VALIDDECKS:
+            raise ValueError("Invalid number of players or decks.")
+
         # initalize the board
         self.values = {'2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'J': 10, 'Q': 10, 'K': 10, 'A': 11}
         self.board = []
