@@ -184,8 +184,11 @@ class Game:
     # Plays multiple games and returns the number of wins for each player, 
     # and the number of ties at the end
     def multiGame(self, players, games, printOutput = True, againstDealer = True):
-        wins = [0] * (len(players) + 1)
-        
+        # [(dealer wins, dealer ties), (player1 wins, player1 ties), ...]
+        wins = []
+        for i in range(len(players)):
+            wins.append([0, 0])
+            
         # Check if the number of players is valid
         if len(players) != len(self.players):
             raise ValueError("Invalid number of players.")
@@ -238,11 +241,11 @@ class Game:
                 self.endGame(printOutput, againstDealer)
                 
                 if self.winner is not None:
-                    if len(self.winner) >= 1:
-                        for winner in self.winner:
-                            wins[winner] += 1
-                    else:
-                        wins[-1] += 1
+                    
+                    for winner in self.winner[0]:
+                       wins[winner][0] += 1
+                    for tie in self.winner[1]:
+                         wins[tie][1] += 1
                 break
                 
         return wins
@@ -262,27 +265,43 @@ class Game:
         
         # Determine the winner(s)
         winners = []
+        ties = []
         if againstDealer:
             for i in range(1, len(scores)):
                 if scores[i] > 21:
                     continue
                 if scores[i] > scores[0] or scores[0] > 21:
                     winners.append(i)
-            if len(winners) == 0 and scores[0] <= 21:
+                if scores[i] == scores[0]:
+                    ties.append(i)
+                    ties.append(0)
+            if len(winners) == 0 and scores[0] <= 21 and len(ties) == 0:
                 winners.append(0)
+                
         else: # Against each other
             maxScore = 0
+            for i in scores:
+                if i > maxScore and i <= 21:
+                    maxScore = i
+            
             winner = None
             for i in range(len(scores)):
                 if scores[i] >= maxScore and scores[i] <= 21:
                     maxScore = scores[i]
-                    winner = i
-            if winner is not None:
-                winners.append(winner)
+                    winners.append(i)
+           
+            if len(winners) > 1:
+                for i in range(len(scores)):
+                    if scores[i] == maxScore:
+                        ties.append(i)
+                winners = []
+            else:
+                ties = []
+                
         
 
         self.turn = 0  # Game over
-        self.winner = winners
+        self.winner = (winners, ties)
         # Print the game result if required
         if printOutput:
             
