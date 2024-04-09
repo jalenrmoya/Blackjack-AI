@@ -16,7 +16,7 @@ class Game:
             raise ValueError("Invalid number of players or decks.")
 
         # initalize the board
-        self.values = {'2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'J': 10, 'Q': 10, 'K': 10, 'A': 11}
+        self.values = {'🂠': 0, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'J': 10, 'Q': 10, 'K': 10, 'A': 11}
         self.board = []
         self.turn = 1
         self.winner = None
@@ -69,7 +69,7 @@ class Game:
         for i in range(len(self.players)):
             self.players[i] = []
             
-        
+       
     def hit(self, printOutput = True):
         if self.turn == 0:
             print("Game has ended. No more moves allowed.")
@@ -184,17 +184,19 @@ class Game:
     # Plays multiple games and returns the number of wins for each player, 
     # and the number of ties at the end
     def multiGame(self, players, games, printOutput = True, againstDealer = True):
+        # List will be setup as,
         # [(dealer wins, dealer ties), (player1 wins, player1 ties), ...]
         wins = []
         for i in range(len(players)):
+            if players[i].__class__.__name__ == "ManualPlayer":
+                raise ValueError("ManualPlayer cannot be used in multiGame.")
             wins.append([0, 0])
-            
+
         # Check if the number of players is valid
         if len(players) != len(self.players):
             raise ValueError("Invalid number of players.")
         
         for i in range(games):
-            
             self.resetGame()
             self.dealCards()
             if printOutput:
@@ -246,6 +248,8 @@ class Game:
                        wins[winner][0] += 1
                     for tie in self.winner[1]:
                          wins[tie][1] += 1
+                if printOutput:
+                    print(f"Game {i + 1} results: {wins}")
                 break
                 
         return wins
@@ -253,10 +257,10 @@ class Game:
     
     # ends the game and determines the winner
     def endGame(self, printOutput=True, againstDealer=True):
+
         # Calculate scores for all players
         scores = []
         playerScores = []
-        dealerScore = self.calculateScore(self.players[0])
         for player in self.players:
             score = self.calculateScore(player)
             scores.append(score)
@@ -268,28 +272,36 @@ class Game:
         ties = []
         if againstDealer:
             for i in range(1, len(scores)):
+                # player busted
                 if scores[i] > 21:
                     continue
+
+                # Dealer busts or player has higher score
                 if scores[i] > scores[0] or scores[0] > 21:
                     winners.append(i)
+
+                # Player has same score as dealer
                 if scores[i] == scores[0]:
                     ties.append(i)
                     ties.append(0)
+
+                # No one beats the dealer
             if len(winners) == 0 and scores[0] <= 21 and len(ties) == 0:
                 winners.append(0)
                 
-        else: # Against each other
+        else: # Against each other (DIFFERENT THAN AGAINST DEALER)
             maxScore = 0
             for i in scores:
                 if i > maxScore and i <= 21:
                     maxScore = i
-            
-            winner = None
+
+            # Find the player(s) with the highest score
             for i in range(len(scores)):
                 if scores[i] >= maxScore and scores[i] <= 21:
                     maxScore = scores[i]
                     winners.append(i)
-           
+
+           # Having multiple winners in this mode means a tie
             if len(winners) > 1:
                 for i in range(len(scores)):
                     if scores[i] == maxScore:
@@ -304,12 +316,10 @@ class Game:
         self.winner = (winners, ties)
         # Print the game result if required
         if printOutput:
-            
             print(f"\nFinal Board: {self.players}")
             print(f"Scores: {scores}")
             if againstDealer:
                 print(f"Dealer's hand: {self.players[0]}")
-            
             if len(winners) == 1 and winners[0] != 0:
                 print(f"Player {winners[0]} wins!")
             elif len(winners) > 1:
@@ -322,6 +332,7 @@ class Game:
     # returns the current player
     def currentPlayer(self):
         return self.players[self.turn - 1]
+    
     # returns the current turn
     def getTurn(self):
         return self.turn
