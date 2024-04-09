@@ -7,13 +7,12 @@ from Game import Game
 # of the hand is 17 or greater
 class Dealer: 
     def __init__(self):
-        self.hand = []
+        # self.hand = []
         self.value = 0
-        self.bust = False
-        self.blackjack = False
         self.game = Game()
     
-    def get_move(self, game):
+    def get_move(self, game, hand):
+        self.value = game.calculateScore(hand)
         if self.value < 17:
             return "hit"
         else:
@@ -24,11 +23,11 @@ class ManualPlayer:
     def __init__(self):
         self.hand = []
         self.value = 0
-        self.bust = False
-        self.blackjack = False
         self.game = Game()
     
-    def get_move(self, game):
+    def get_move(self, game, hand):
+        self.value = game.calculateScore(hand)
+        self.hand = hand
         while True:
             move = input("Enter 'h' to hit or 's' to stand: ").lower()
             if move == 'h':
@@ -44,10 +43,10 @@ class RandomPlayer:
     def __init__(self):
         self.hand = []
         self.value = 0
-        self.bust = False
-        self.blackjack = False
 
-    def get_move(self, game):
+    def get_move(self, game, hand):
+        self.value = game.calculateScore(hand)
+        self.hand = hand
         if rand.random() < 0.5:
             return "hit"
         else:

@@ -12,4 +12,5 @@ if __name__ == "__main__":
     game = Game(len(players), decks=1)
     game.play_game(players)
     
-    print(game.winner)
+    # players = [dealer, random_player, random_player]
+    # print(game.multiGame(players, 1000, True, True))
