@@ -16,7 +16,8 @@ class Game:
             raise ValueError("Invalid number of players or decks.")
 
         # initalize the board
-        self.values = {'🂠': 0, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'J': 10, 'Q': 10, 'K': 10, 'A': 11}
+        self.values = {'🂠': 0, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, 
+                       '8': 8, '9': 9, '10': 10, 'J': 10, 'Q': 10, 'K': 10, 'A': 11}
         self.board = []
         self.turn = 1
         self.winner = None
@@ -243,7 +244,7 @@ class Game:
                 self.endGame(printOutput, againstDealer)
                 
                 if self.winner is not None:
-                    
+                    print(f"Game {i + 1} results: {self.winner}")
                     for winner in self.winner[0]:
                        wins[winner][0] += 1
                     for tie in self.winner[1]:
@@ -288,6 +289,11 @@ class Game:
                 # No one beats the dealer
             if len(winners) == 0 and scores[0] <= 21 and len(ties) == 0:
                 winners.append(0)
+
+                # Everyone busts
+            if len(winners) == 0 and len(ties) == 0:
+                for i in range(len(scores)):
+                    ties.append(i)
                 
         else: # Against each other (DIFFERENT THAN AGAINST DEALER)
             maxScore = 0

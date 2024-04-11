@@ -10,10 +10,10 @@ if __name__ == "__main__":
     players = [dealer, manual_player, random_player]
 
     game = Game(len(players), decks=1)
-    game.play_game(players)
+    # game.play_game(players)
     
     
     # Test the multiGame function,
-    # multiGame(players, num_games, printOutput=True, againstDealer=True)
-    # players = [dealer, random_player, random_player]
-    # print(game.multiGame(players, 1000))
+    # How it works, multiGame(players, num_games, printOutput=True, againstDealer=True)
+    players = [dealer, random_player, random_player]
+    print(game.multiGame(players, 1000, againstDealer=True))
