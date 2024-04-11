@@ -283,14 +283,18 @@ class Game:
 
                 # Player has same score as dealer
                 if scores[i] == scores[0]:
+                    # Don't add dealer twice 
+                    if not ties.count(0):
+                        ties.append(0)
+                        
                     ties.append(i)
-                    ties.append(0)
 
-                # No one beats the dealer
+
+            # No one beats the dealer
             if len(winners) == 0 and scores[0] <= 21 and len(ties) == 0:
                 winners.append(0)
 
-                # Everyone busts
+            # Everyone busts
             if len(winners) == 0 and len(ties) == 0:
                 for i in range(len(scores)):
                     ties.append(i)
@@ -351,3 +355,5 @@ class Game:
     def getBoard(self):
         return self.board
     
+    def setPlayers(self, players):
+        self.players = players

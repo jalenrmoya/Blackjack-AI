@@ -16,4 +16,7 @@ if __name__ == "__main__":
     # Test the multiGame function,
     # How it works, multiGame(players, num_games, printOutput=True, againstDealer=True)
     players = [dealer, random_player, random_player]
-    print(game.multiGame(players, 1000, againstDealer=True))
+    # print(game.multiGame(players, 1000))
+    game.setPlayers([['A'],['A'],['A']])
+    print(game.endGame())
+    print(game.winner)
