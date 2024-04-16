@@ -12,11 +12,10 @@ if __name__ == "__main__":
     game = Game(len(players), decks=1)
     # game.play_game(players)
     
-    
+    CardCountingPlayer = CardCountingPlayer(1)
     # Test the multiGame function,
-    # How it works, multiGame(players, num_games, printOutput=True, againstDealer=True)
-    players = [dealer, random_player, random_player]
-    # print(game.multiGame(players, 1000))
-    game.setPlayers([['A'],['A'],['A']])
-    print(game.endGame())
-    print(game.winner)
+    # multiGame(players, num_games, printOutput=True, againstDealer=True)
+    players = [dealer, NearestNeighborPlayer(), random_player]
+    wins = game.multiGame(players, 1000, againstDealer=True)
+    print(wins)
+    

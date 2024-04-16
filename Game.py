@@ -100,8 +100,11 @@ class Game:
             self.turn = 1
 
     # checks if the player has busted
-    def checkBust(self):
-        return self.calculateScore(self.players[self.turn - 1]) > 21
+    def checkBust(self, player = None):
+        if player is None:
+            return self.calculateScore(self.players[self.turn - 1]) > 21
+        else:
+            return self.calculateScore(player) > 21
     
     # calculates the score of the player based on the cards
     def calculateScore(self, player):
@@ -286,7 +289,7 @@ class Game:
                     # Don't add dealer twice 
                     if not ties.count(0):
                         ties.append(0)
-
+                        
                     ties.append(i)
 
 
