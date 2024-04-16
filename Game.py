@@ -286,7 +286,7 @@ class Game:
                     # Don't add dealer twice 
                     if not ties.count(0):
                         ties.append(0)
-                        
+
                     ties.append(i)
 
 
@@ -355,5 +355,7 @@ class Game:
     def getBoard(self):
         return self.board
     
+    # sets the current players
+    # ex. players = [['A'],['A'],['A']]
     def setPlayers(self, players):
         self.players = players
