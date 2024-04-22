@@ -1,6 +1,6 @@
 import random as rand
 from Game import Game
-
+from copy import deepcopy
 # BlackJack Player Class
 
 # Dealer Class uses a basic strategy of hitting until the value 
@@ -114,3 +114,96 @@ class NearestNeighborPlayer:
         # Otherwise, stand
         return "stand"
 
+class MinimaxPlayer:
+    def __init__(self):
+        pass
+
+    def get_move(self, game, player_hand):
+        # Example usage of simulate_move
+        new_game_state = game.simulate_move("hit")  # Simulate a 'hit'
+        # Assess the new game state to decide the next move...
+
+        # Use some criteria or minimax logic here to determine the move
+        return "hit" or "stand"
+
+    def minimax_decision(self, game, player_hand):
+        best_move = None
+        best_score = float('-inf')
+        legal_moves = self.get_legal_moves(game)
+
+        # Simulate each legal move and calculate the minimax score
+        for move in legal_moves:
+            # You need to update game state based on move, this part is missing
+            new_game_state = self.simulate_move(game, player_hand, move)
+            score = self.minimax(new_game_state, move, depth=10)  # Assuming depth starts at 3
+            if score > best_score:
+                best_score = score
+                best_move = move
+
+        return best_move
+
+    # def simulate_move(self, game, player_hand, move):
+    #     # Create a deep copy of the game state to modify
+    #     # Note: You'll need to ensure Game class supports cloning or copying
+    #     new_game_state = deepcopy(game)  # This requires 'from copy import deepcopy'
+    #     # Apply the move to the new game state
+    #     new_game_state.apply_move(player_hand, move)  # You need to implement this method in Game
+    #     return new_game_state
+
+    def minimax(self, game_state, move, depth):
+        if depth == 0 or game_state.is_terminal():
+            return self.evaluate(game_state)
+
+        if game_state.is_player_turn():
+            best_score = float('-inf')
+            for next_move in self.get_legal_moves(game_state):
+                new_state = game_state.apply_move(next_move)
+                score = self.minimax(new_state, next_move, depth - 1)
+                best_score = max(best_score, score)
+            return best_score
+        else:  # Opponent's turn (e.g., dealer in Blackjack)
+            best_score = float('inf')
+            for next_move in self.get_legal_moves(game_state):
+                new_state = game_state.apply_move(next_move)
+                score = self.minimax(new_state, next_move, depth - 1)
+                best_score = min(best_score, score)
+            return best_score
+
+    def evaluate(self, game_state):
+        if game_state.player_busted():
+            return -float('inf')  # Assign a very low score if player busts.
+
+        player_score = game_state.get_player_score()
+        dealer_card = game_state.get_dealer_visible_card()
+        remaining_cards = game_state.get_remaining_cards()
+
+        # Base score is primarily the player's current hand value normalized.
+        score = player_score - 21 if player_score <= 21 else -100  # Punish going over 21.
+
+        # Modify score based on dealer's card.
+        if dealer_card.value >= 7:
+            score -= 5  # More risky situation if dealer has a strong card.
+        elif dealer_card.value <= 6:
+            score += 5  # Less risk if dealer might bust.
+
+        # Adjust score based on the distribution of remaining cards.
+        favorable_cards = sum(1 for card in remaining_cards if card.value + player_score <= 21)
+        total_cards = len(remaining_cards)
+        bust_probability = (total_cards - favorable_cards) / total_cards if total_cards else 1
+
+        # Adjust score based on bust probability.
+        score -= bust_probability * 10  # Penalize high risk of busting.
+
+        return score
+
+    def get_legal_moves(self, game_state):
+        moves = ['stand', 'hit']  # Basic moves available in every situation.
+
+        # Check conditions for double down or split (if your rules allow these moves)
+        # Example: Player can double down only on certain hand values (like 9, 10, 11).
+        # if game_state.can_double_down():
+        #     moves.append('double down')
+        # if game_state.can_split():
+        #     moves.append('split')
+
+        return moves

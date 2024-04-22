@@ -1,3 +1,5 @@
+import copy
+from copy import deepcopy
 import random as rand
 
 # BlackJack Game Class
@@ -362,3 +364,35 @@ class Game:
     # ex. players = [['A'],['A'],['A']]
     def setPlayers(self, players):
         self.players = players
+
+    def copy(self):
+        """Create a shallow copy of the game state."""
+        return copy.copy(self)
+
+    def simulate_move(self, move):
+        """
+        Simulates a move ('hit' or 'stand') for the current player and returns the new game state without affecting the actual game state.
+
+        Args:
+        move (str): The move to simulate ('hit' or 'stand').
+
+        Returns:
+        Game: A new game state post move simulation.
+        """
+        # Create a deep copy of the game to simulate the move on
+        simulated_game = deepcopy(self)
+
+        # Get current player index
+        player_index = simulated_game.getTurn() - 1
+
+        # Apply the move
+        if move == "hit":
+            if len(simulated_game.deck) > 0:
+                simulated_game.players[player_index].append(simulated_game.deck.pop())
+                simulated_game.board[player_index].append(simulated_game.players[player_index][-1])
+            if simulated_game.checkBust(player=simulated_game.players[player_index]):
+                simulated_game.nextTurn()
+        elif move == "stand":
+            simulated_game.nextTurn()
+
+        return simulated_game

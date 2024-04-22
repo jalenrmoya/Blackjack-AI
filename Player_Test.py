@@ -7,7 +7,7 @@ if __name__ == "__main__":
     
 
     # [Dealer, Player 1, Player 2, ...]
-    players = [Dealer(), ManualPlayer(), RandomPlayer()]
+    players = [Dealer(), RandomPlayer(), MinimaxPlayer()]
 
     game = Game(len(players), decks=1)
     # game.play_game(players)
@@ -16,7 +16,7 @@ if __name__ == "__main__":
     # Test the multiGame function,
     # multiGame(players, num_games, printOutput=True, againstDealer=True)
 
-    players = [Dealer(), RandomPlayer(), NearestNeighborPlayer()]
+    players = [Dealer(), NearestNeighborPlayer(), MinimaxPlayer()]
     num_games = 1000
     
     # this is used later to plot the results
