@@ -16,7 +16,7 @@ if __name__ == "__main__":
     # Test the multiGame function,
     # multiGame(players, num_games, printOutput=True, againstDealer=True)
 
-    players = [Dealer(), RandomPlayer(), RandomPlayer()]
+    players = [Dealer(), RandomPlayer(), NearestNeighborPlayer()]
     num_games = 1000
     
     # this is used later to plot the results
