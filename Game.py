@@ -366,8 +366,16 @@ class Game:
         self.players = players
 
     def copy(self):
-        """Create a shallow copy of the game state."""
-        return copy.copy(self)
+        """Create a deep copy of the game state."""
+        game = Game(len(self.players), self.decksNum)
+        game.deck = list(self.shuffleDeck())
+        game.board = [list(player) for player in self.board]
+        game.turn = self.turn
+        game.winner = self.winner
+        game.moves = self.moves
+        game.players = [list(player) for player in self.players]
+        return game
+
 
     def simulate_move(self, move):
         """

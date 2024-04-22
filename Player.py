@@ -115,8 +115,9 @@ class NearestNeighborPlayer:
         return "stand"
 
 class MinimaxPlayer:
-    def __init__(self):
-        pass
+    def __init__(self, depth=3, player_num=1):
+        self.depth = depth
+        self.player_num = player_num
 
     def get_move(self, game, player_hand):
         # Example usage of simulate_move
@@ -124,23 +125,23 @@ class MinimaxPlayer:
         # Assess the new game state to decide the next move...
 
         # Use some criteria or minimax logic here to determine the move
-        return "hit" or "stand"
+        return self.minimax(game.copy(), player_hand, self.depth)
 
-    def minimax_decision(self, game, player_hand):
-        best_move = None
-        best_score = float('-inf')
-        legal_moves = self.get_legal_moves(game)
+    # def minimax_decision(self, game, player_hand):
+    #     best_move = None
+    #     best_score = float('-inf')
+    #     legal_moves = self.get_legal_moves(game)
 
-        # Simulate each legal move and calculate the minimax score
-        for move in legal_moves:
-            # You need to update game state based on move, this part is missing
-            new_game_state = self.simulate_move(game, player_hand, move)
-            score = self.minimax(new_game_state, move, depth=10)  # Assuming depth starts at 3
-            if score > best_score:
-                best_score = score
-                best_move = move
+    #     # Simulate each legal move and calculate the minimax score
+    #     for move in legal_moves:
+    #         # You need to update game state based on move, this part is missing
+    #         new_game_state = self.simulate_move(game, player_hand, move)
+    #         score = self.minimax(new_game_state, move, depth=10)  # Assuming depth starts at 3
+    #         if score > best_score:
+    #             best_score = score
+    #             best_move = move
 
-        return best_move
+    #     return best_move
 
     # def simulate_move(self, game, player_hand, move):
     #     # Create a deep copy of the game state to modify
@@ -151,49 +152,54 @@ class MinimaxPlayer:
     #     return new_game_state
 
     def minimax(self, game_state, move, depth):
-        if depth == 0 or game_state.is_terminal():
+        if depth == 0 or game_state.winner is not None:
             return self.evaluate(game_state)
 
-        if game_state.is_player_turn():
+        if game_state.turn == self.player_num:  # Player's turn (e.g., you in Blackjack)
             best_score = float('-inf')
             for next_move in self.get_legal_moves(game_state):
-                new_state = game_state.apply_move(next_move)
-                score = self.minimax(new_state, next_move, depth - 1)
+                if next_move == "hit":
+                    game_state.hit()
+                else:
+                    game_state.stand()
+                score = self.minimax(game_state, next_move, depth - 1)
                 best_score = max(best_score, score)
             return best_score
         else:  # Opponent's turn (e.g., dealer in Blackjack)
             best_score = float('inf')
             for next_move in self.get_legal_moves(game_state):
-                new_state = game_state.apply_move(next_move)
-                score = self.minimax(new_state, next_move, depth - 1)
+                if next_move == "hit":
+                    game_state.hit()
+                else:
+                    game_state.stand()
+                score = self.minimax(game_state, next_move, depth - 1)
                 best_score = min(best_score, score)
             return best_score
 
     def evaluate(self, game_state):
-        if game_state.player_busted():
+        player_score = game_state.calculateScore(game_state.board[self.player_num])
+        dealer_card = game_state.calculateScore(game_state.board[0])  # Assume only the dealer's visible card matters
+        remaining_cards = game_state.deck
+        
+        if player_score > 21:
             return -float('inf')  # Assign a very low score if player busts.
-
-        player_score = game_state.get_player_score()
-        dealer_card = game_state.get_dealer_visible_card()
-        remaining_cards = game_state.get_remaining_cards()
-
+        
         # Base score is primarily the player's current hand value normalized.
         score = player_score - 21 if player_score <= 21 else -100  # Punish going over 21.
 
         # Modify score based on dealer's card.
-        if dealer_card.value >= 7:
+        if dealer_card >= 7:
             score -= 5  # More risky situation if dealer has a strong card.
-        elif dealer_card.value <= 6:
+        elif dealer_card <= 6:
             score += 5  # Less risk if dealer might bust.
 
         # Adjust score based on the distribution of remaining cards.
-        favorable_cards = sum(1 for card in remaining_cards if card.value + player_score <= 21)
+        favorable_cards = sum(1 for card in remaining_cards if game_state.calculateScore([card]) + player_score <= 21)
         total_cards = len(remaining_cards)
         bust_probability = (total_cards - favorable_cards) / total_cards if total_cards else 1
 
         # Adjust score based on bust probability.
         score -= bust_probability * 10  # Penalize high risk of busting.
-
         return score
 
     def get_legal_moves(self, game_state):
